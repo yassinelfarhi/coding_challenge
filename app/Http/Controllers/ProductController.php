@@ -5,54 +5,42 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Repositories\CategoryRepository;
+use App\Repositories\ProductRepository;
+use App\Services\ProductService;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
     
+    private ProductService $productService;
 
-    public function getProducts(){
-
-        $products = Product::all();
-        return response()->json($products);
+    public function __construct(ProductService $productService)
+    {
+        $this->productService = $productService;
     }
 
-
-    public function getCategories(){
-
-
-        $categories = Category::all();
-        return response()->json($categories);
+    public function getProducts(): JsonResponse
+    {
+        return response()->json($this->productService->getAllProducts());
     }
 
 
     public function index() 
     {
-
-        $products = Product::all();
+        $products = $this->productService->getAllProducts();
         return view('products.listing',compact('products')); 
-
     }
 
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'category' => 'required',
-        ]);
+ 
+        $validated = $request->validated();
 
-        $product = new Product();
-        $product->name = $validated['name'];
-        $product->description = $validated['description'];
-        $product->price = $validated['price'];
-        $product->category_name = $validated['category'];
-        $product->save();
-        
-        $category = new Category();
-        $category->name = $validated['category'];
-        $category->product_id = $product->id;
-        $category->save();
+        $product = $this->productService->createProduct($validated);
+
+        return $product;
     }
 }

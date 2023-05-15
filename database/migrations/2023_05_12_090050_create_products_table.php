@@ -16,15 +16,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->float('price');
-            $table->string('category_name');
-            // $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('category_id');
             $table->timestamps();
 
-            //  $table->foreign('category_id');
-            //  $table->references('id');
-            //  $table->on('categories');
-            //  $table->onDelete('cascade');
-
+            $table->foreign('category_id')
+                    ->references('id')
+                    ->on('categories')
+                    ->onDelete('cascade');
+            
         });
     }
 

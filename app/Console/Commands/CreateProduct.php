@@ -2,9 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Category;
 use Illuminate\Console\Command;
 use App\Models\Product;
+use App\Repositories\ProductRepository;
+use App\Services\ProductService;
 
 class CreateProduct extends Command
 {
@@ -27,23 +30,22 @@ class CreateProduct extends Command
      */
     public function handle()
     {
-        $name = $this->argument('name');
-        $description = $this->argument('description');
-        $price = $this->argument('price');
-        $category = $this->argument('category');
 
-  
-        $product = new Product();
-        $product->name = $name;
-        $product->description = $description;
-        $product->price = $price;
-        $product->category_name = $category;
-        $product->save();
+        $data = [
+                'name' => $this->argument('name'),
+                'description' => $this->argument('description'),
+                'price' => $this->argument('price'),
+                'category' => ['name' => $this->argument('category')]
+        ];
+        
+        $productRequest = new ProductRequest();
+        $productRequest->merge($data);
+        $validatedData = $productRequest->validate($productRequest->rules());
 
-        $categoryObj = new Category();
-        $categoryObj->name = $category;
-        $categoryObj->product_id = $product->id;
-        $categoryObj->save();
+        $productRepository = new ProductRepository();
+        $productRepository->createProduct($validatedData);
+
+
 
     }
 }

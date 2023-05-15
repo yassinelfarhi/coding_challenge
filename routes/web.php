@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,7 @@ Route::get('/products',[ProductController::class,'index']);
 Route::get('/products/create',[ProductController::class,'create']);
 Route::post('/products/persiste',[ProductController::class,'store'])->name('products.store');
 Route::get('/api/products',[ProductController::class,'getProducts']);
-Route::get('/api/categories',[ProductController::class,'getCategories']);
+Route::get('/api/categories',[CategoryController::class,'index']);
 
 
 
